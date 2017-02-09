@@ -39,7 +39,39 @@ function getFunctions(source) {
   return false;
 }
 
+function getExpressionsInScope({source, lineNumber, columnNumber}){
+  // debugger
+  const ast = getAst(source);
+   
+  var possiblePaths = []
+  var uniqueScopes = []
+
+   // todo: don't traverse whole tree
+  traverse(ast, {
+      enter(path) {
+        var loc =  path.scope.parentBlock.loc;
+
+
+        var startsBefore = loc.start.line <= lineNumber
+        var endsAfter = loc.end.line >= lineNumber
+
+        if (startsBefore && endsAfter) {
+          var hasScope = uniqueScopes.includes(path.scope)
+          if (!hasScope){
+            possiblePaths.push(path)
+            uniqueScopes.push(path.scope)
+          }
+          
+        }
+
+      }
+  })
+
+  debugger
+}
+
 module.exports = {
   parse,
-  getFunctions
+  getFunctions,
+  getExpressionsInScope
 };
