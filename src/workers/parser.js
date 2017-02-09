@@ -39,35 +39,30 @@ function getFunctions(source) {
   return false;
 }
 
-function getExpressionsInScope({source, lineNumber, columnNumber}){
+function getExpressionsInScope({ source, lineNumber, columnNumber }) {
   // debugger
   const ast = getAst(source);
-   
-  var possiblePaths = []
-  var uniqueScopes = []
+
+  const possiblePaths = [];
+  const uniqueScopes = [];
 
    // todo: don't traverse whole tree
   traverse(ast, {
-      enter(path) {
-        var loc =  path.scope.parentBlock.loc;
+    enter(path) {
+      const loc = path.scope.parentBlock.loc;
 
+      const startsBefore = loc.start.line <= lineNumber;
+      const endsAfter = loc.end.line >= lineNumber;
 
-        var startsBefore = loc.start.line <= lineNumber
-        var endsAfter = loc.end.line >= lineNumber
-
-        if (startsBefore && endsAfter) {
-          var hasScope = uniqueScopes.includes(path.scope)
-          if (!hasScope){
-            possiblePaths.push(path)
-            uniqueScopes.push(path.scope)
-          }
-          
+      if (startsBefore && endsAfter) {
+        const hasScope = uniqueScopes.includes(path.scope);
+        if (!hasScope) {
+          possiblePaths.push(path);
+          uniqueScopes.push(path.scope);
         }
-
       }
-  })
-
-  debugger
+    }
+  });
 }
 
 module.exports = {
